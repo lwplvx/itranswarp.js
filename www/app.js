@@ -151,7 +151,14 @@ app.use(async (ctx, next) => {
 if (! isProduction) {
     let staticFiles = require('./middlewares/static-files');
     app.use(staticFiles('/static/', __dirname + '/static'));
+
+
+    //// koa koa - static   用了这个 就应该不用上门那个  static file support:
+    //var koaStatic = require('koa-static');
+    ////加载表态文件
+    //app.use(koaStatic(__dirname + '/static'));
 }
+
 
 // parse request body:
 app.use(bodyParser());

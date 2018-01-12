@@ -11,7 +11,7 @@
  */
 module.exports = {
     // server domain name:
-    domain: 'local.itranswarp.com',
+    domain: 'localhost:5000',
     // behind a reverse proxy:
     proxy: false,
     // the theme used, default to 'default':
@@ -33,17 +33,17 @@ module.exports = {
     },
     db: {
         // mysql host or ip address:
-        host: 'localhost',
+        host: '23.97.75.9',
         // mysql port (default to 3306):
         port: 3306,
         // mysql username:
-        username: 'root',
+        username: 'lwplvx',
         // mysql password:
-        password: 'password',
+        password: 'zyp424626',
         // database name:
         database: 'itranswarp',
         // log sql:
-        showSql: false,
+        showSql: true,
         // pool settings:
         maxConnections: 20,
         minConnections: 1,
@@ -53,7 +53,7 @@ module.exports = {
         // cache key prefix:
         prefix: 'itw/',
         // memcached host or ip address:
-        host: '127.0.0.1',
+        host: '13.75.42.171',
         // memcached port, default to 11211:
         port: 11211,
         // connection timeout, default to 1 second:
