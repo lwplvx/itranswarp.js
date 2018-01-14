@@ -33,13 +33,13 @@ module.exports = {
     },
     db: {
         // mysql host or ip address:
-        host: '23.97.75.9',
+        host: 'localhost',
         // mysql port (default to 3306):
         port: 3306,
         // mysql username:
-        username: 'lwplvx',
+        username: 'root',
         // mysql password:
-        password: 'zyp424626',
+        password: 'password',
         // database name:
         database: 'itranswarp',
         // log sql:
@@ -53,7 +53,7 @@ module.exports = {
         // cache key prefix:
         prefix: 'itw/',
         // memcached host or ip address:
-        host: '13.75.42.171',
+        host: 'localhost',
         // memcached port, default to 11211:
         port: 11211,
         // connection timeout, default to 1 second:

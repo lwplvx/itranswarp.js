@@ -7,3 +7,6 @@
 
 itranswarp.css  需要运行 less-watch-compiler static/css/less static/css itranswarp.less  生成 
 themes default 的 js 和 css  文件 要参考 原版文件的路径复制。
+
+
+windows  通过  set NODE_ENV=production  命令 可以设置 process.env.NODE_ENV
