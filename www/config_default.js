@@ -15,7 +15,7 @@ module.exports = {
     // behind a reverse proxy:
     proxy: false,
     // the theme used, default to 'default':
-    theme: 'default',
+    theme: 'default', // default
     spider: {
         // anti-spider = x hits / 10 min, 0=disabled:
         antiSpider: 0,
