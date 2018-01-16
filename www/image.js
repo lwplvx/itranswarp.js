@@ -12,7 +12,7 @@ const
     bluebird = require('bluebird'),
     api = require('./api'),
     logger = require('./logger'),
-    gm = require('gm').subClass({ imageMagick : true });
+    gm = require('gm').subClass({ imageMagick : false });
 
 function calcScaleSize(origin_width, origin_height, resize_width, resize_height, keepAspect) {
     function isEnlarge(tw, th) {

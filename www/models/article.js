@@ -43,7 +43,7 @@ module.exports = {
             type: dbtypes.BIGINT,
             defaultValue: Date.now,
             index: true
-        }
+        }        
     },
-    extraFields: ['content']
+    extraFields: ['content','url']
 };

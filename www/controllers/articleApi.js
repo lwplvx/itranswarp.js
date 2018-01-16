@@ -62,6 +62,16 @@ async function getRecentArticles(max) {
     });
 }
 
+/**
+* 为属性 url 赋值
+*/
+function setArticlesUrl(articles) {
+    //articles
+    articles.forEach((item) => { 
+        item.url = `http://${config.domain}/article/${item.id}`;
+    }); 
+}
+
 async function getArticles(page, includeUnpublished=false) {
     let opt = includeUnpublished ? {} : {
         where: {
@@ -227,12 +237,16 @@ module.exports = {
             includeUnpublished = (user !== null) && (user.role <= constants.role.EDITOR),
             page = helper.getPage(ctx.request),
             articles = await getArticles(page, includeUnpublished);
+
+            //为扩展属性 url 赋值
+            setArticlesUrl(articles);
+
         ctx.rest({
             page: page,
             articles: articles
         });
     },
-
+    
     'POST /api/articles': async (ctx, next) => {
         /**
          * Create a new article.

@@ -11,7 +11,7 @@
  */
 module.exports = {
     // server domain name:
-    domain: 'localhost:5000',
+    domain: 'iot-blogs.cloudgarden.cn',
     // behind a reverse proxy:
     proxy: false,
     // the theme used, default to 'default':
