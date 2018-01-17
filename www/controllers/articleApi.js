@@ -63,13 +63,24 @@ async function getRecentArticles(max) {
 }
 
 /**
-* 为属性 url 赋值
+* 为扩展属性 赋值
+* url , user_avatar 
 */
-function setArticlesUrl(articles) {
+function setArticlesExtraFields(articles) {
     //articles
     articles.forEach((item) => {
-        item.url = `http://${config.domain}/article/${item.id}`;
+        setArticleExtraFields(item); 
     });
+}
+
+/**
+* 为扩展属性 赋值
+* url , user_avatar 
+*/
+function setArticleExtraFields(article) {
+    //article
+    article.url = `http://${config.domain}/article/${article.id}`;
+    article.user_avatar = `http://${config.domain}/static/img/admin.png`;
 }
 
 async function getArticles(page, includeUnpublished = false) {
@@ -221,10 +232,11 @@ module.exports = {
         if (ctx.request.query.format === 'html') {
             article.content = helper.md2html(article.content, true);
         }
+        setArticleExtraFields(article);
+
         ctx.rest(article);
     },
-
-
+    
     'GET /api/articles/category/:id': async function (ctx, next) {
         /**
          * Get articles by page with category .
@@ -240,8 +252,8 @@ module.exports = {
             page = helper.getPage(ctx.request),
             articles = await getArticlesByCategory(id, page);
 
-        //为扩展属性 url 赋值
-        setArticlesUrl(articles);
+        //为扩展属性 赋值
+        setArticlesExtraFields(articles);
 
         ctx.rest({
             page: page,
@@ -263,8 +275,8 @@ module.exports = {
             page = helper.getPage(ctx.request),
             articles = await getArticles(page, includeUnpublished);
 
-        //为扩展属性 url 赋值
-        setArticlesUrl(articles);
+        //为扩展属性 赋值
+        setArticlesExtraFields(articles);
 
         ctx.rest({
             page: page,

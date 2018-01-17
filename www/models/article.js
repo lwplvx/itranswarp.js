@@ -45,5 +45,5 @@ module.exports = {
             index: true
         }        
     },
-    extraFields: ['content','url']
+    extraFields: ['content','url','user_avatar']
 };
