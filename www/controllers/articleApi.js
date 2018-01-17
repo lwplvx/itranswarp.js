@@ -62,6 +62,49 @@ async function getRecentArticles(max) {
     });
 }
 
+
+// get recommend articles: 
+async function getPageRecommendArticles(page) {
+    let now = Date.now();
+    page.total = await Article.count({
+        where: {
+            updated_at: {
+                $lt: now
+            },
+            recommend: 1
+        }
+    });
+    if (page.isEmpty) {
+        return [];
+    }
+    return await Article.findAll({
+        where: {
+            publish_at: {
+                $lt: now
+            },
+            recommend: 1
+        },
+        order: 'updated_at DESC',
+        offset: page.offset,
+        limit: page.limit
+    });
+}
+
+// get recommend articles: 
+async function getRecommendArticles(max) {
+    return await Article.findAll({
+        where: {
+            publish_at: {
+                $lt: Date.now()
+            },
+            recommend: 1
+        },
+        order: 'updated_at DESC',
+        limit: max
+    }); 
+}
+
+
 /**
 * 为扩展属性 赋值
 * url , user_avatar 
@@ -120,32 +163,6 @@ async function getArticlesByCategory(categoryId, page) {
                 $lt: now
             },
             category_id: categoryId
-        },
-        order: 'publish_at DESC',
-        offset: page.offset,
-        limit: page.limit
-    });
-}
-
-async function getArticlesByRecommend(page) {
-    let now = Date.now();
-    page.total = await Article.count({
-        where: {
-            publish_at: {
-                $lt: now
-            },
-            recommend: 1
-        }
-    });
-    if (page.isEmpty) {
-        return [];
-    }
-    return await Article.findAll({
-        where: {
-            publish_at: {
-                $lt: now
-            },
-            recommend: 1
         },
         order: 'publish_at DESC',
         offset: page.offset,
@@ -219,6 +236,8 @@ module.exports = {
 
     getRecentArticles: getRecentArticles,
 
+    getRecommendArticles: getRecommendArticles,
+
     getArticlesByCategory: getArticlesByCategory,
 
     getArticles: getArticles,
@@ -253,7 +272,7 @@ module.exports = {
         if (ctx.params.id === 'recommend') {
             let
                 page = helper.getPage(ctx.request),
-                articles = await getArticlesByRecommend(page);
+                articles = await getPageRecommendArticles(page);
 
             //为扩展属性 赋值
             setArticlesExtraFields(articles);

@@ -1,0 +1,56 @@
+{% extends '../_base.html' %}
+
+<!-- display sidebar on right -->
+{% set __sidebar_right__ = true %}
+
+{% block nav %} /category/{{ category.id }} {% endblock %}
+
+{% block meta %}
+    <meta property="og:type" content="webpage" />
+    <meta property="og:url" content="http://{{ __request__.host }}/category/{{ category.id }}" />
+    <meta property="og:title" content="{{ category.name }}" />
+    <meta property="og:description" content="{{ category.description }}" />
+    <meta property="og:tag" content="{{ category.tag }}" />
+{% endblock %}
+
+{% block title %}
+    {{ category.name }}
+{% endblock %}
+
+{% block head %}
+    {% set __sidebar_right__ = true %}
+
+<style>
+.x-category-visible {
+    display: block;
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+    <h3>{{ category.name }}</h3>
+
+    {% for a in articles %}
+    <div class="uk-article uk-clearfix">
+        <div>
+            <h3><a href="/article/{{ a.id }}">{{ a.name }}</a></h3>
+        </div>
+        <a class="x-cover-small" href="/article/{{ a.id }}"><img src="{{ __cdn__}}/files/attachments/{{ a.cover_id }}/s" alt="{{ a.name }}" style="width:160px"></a>
+        <div>
+            <p><a href="/user/{{ a.user_id }}">{{ a.user_name }}</a> / <a href="/category/{{ a.category_id }}">{{ category.name }}</a> / <span class="x-smartdate" date="{{ a.publish_at }}">...</span> / {{ _('Reads') }}: {{ a.views }}</p>
+            <p>{{ a.description }}</p>
+            <p><a href="/article/{{ a.id }}" class="uk-button uk-button-primary">{{ _('Read more') }} »</a></p>
+        </div>
+    </div>
+    {% endfor %}
+    {{ pagination('/category/' + category.id + '?page=PAGE', page) }}
+
+    <div id="x-sponsor-a" class="uk-clearfix"><!-- sponsor A --></div>
+
+{% endblock %}
+
+{% block sidebar_right_content %}
+
+{% endblock %}

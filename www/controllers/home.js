@@ -38,7 +38,8 @@ let
         results.push({
             id: oauthId,
             icon: conf.icon,
-            name: conf.name
+            name: conf.name,
+            theme: conf.theme
         });
         return results;
     }, []);
@@ -114,6 +115,7 @@ async function getIndexModel() {
     let
         hotArticles,
         categories = await categoryApi.getCategories(),
+        recommendArticles = await articleApi.getRecommendArticles(10),
         recentArticles = await articleApi.getRecentArticles(10),
         recentTopics = await discussApi.getRecentTopics(20),
         nums = await cache.counts(_.map(recentArticles, function (a) {
@@ -139,7 +141,8 @@ async function getIndexModel() {
     return {
         recentArticles: recentArticles,
         recentTopics: recentTopics,
-        hotArticles: hotArticles
+        hotArticles: hotArticles,
+        recommendArticles:recommendArticles
     };
 }
 
