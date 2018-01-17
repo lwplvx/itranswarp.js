@@ -67,12 +67,12 @@ async function getRecentArticles(max) {
 */
 function setArticlesUrl(articles) {
     //articles
-    articles.forEach((item) => { 
+    articles.forEach((item) => {
         item.url = `http://${config.domain}/article/${item.id}`;
-    }); 
+    });
 }
 
-async function getArticles(page, includeUnpublished=false) {
+async function getArticles(page, includeUnpublished = false) {
     let opt = includeUnpublished ? {} : {
         where: {
             publish_at: {
@@ -155,7 +155,7 @@ async function _getFeed(domain) {
     rss.push(']]></description><lastBuildDate>');
     rss.push(_toRssDate(last_publish_at));
     rss.push('</lastBuildDate><generator>iTranswarp.js</generator><ttl>3600</ttl>');
-    for (let i=0; i<articles.length; i++) {
+    for (let i = 0; i < articles.length; i++) {
         let
             article = articles[i],
             text = await Text.findById(article.content_id),
@@ -224,6 +224,31 @@ module.exports = {
         ctx.rest(article);
     },
 
+
+    'GET /api/articles/category/:id': async function (ctx, next) {
+        /**
+         * Get articles by page with category .
+         * 
+         * @name Get Articles
+         * @param {string} id: The id of the category. 
+         * @param {number} [page=1]: The page number, starts from 1.
+         * @return {object} Article objects and page information.
+         */
+        let
+            user = ctx.state.__user__,
+            id = ctx.params.id,
+            page = helper.getPage(ctx.request),
+            articles = await getArticlesByCategory(id, page);
+
+        //为扩展属性 url 赋值
+        setArticlesUrl(articles);
+
+        ctx.rest({
+            page: page,
+            articles: articles
+        });
+    },
+
     'GET /api/articles': async function (ctx, next) {
         /**
          * Get articles by page.
@@ -238,15 +263,15 @@ module.exports = {
             page = helper.getPage(ctx.request),
             articles = await getArticles(page, includeUnpublished);
 
-            //为扩展属性 url 赋值
-            setArticlesUrl(articles);
+        //为扩展属性 url 赋值
+        setArticlesUrl(articles);
 
         ctx.rest({
             page: page,
             articles: articles
         });
     },
-    
+
     'POST /api/articles': async (ctx, next) => {
         /**
          * Create a new article.
@@ -322,7 +347,7 @@ module.exports = {
          * @error {parameter:invalid} If some parameter is invalid.
          * @error {permission:denied} If current user has no permission.
          */
-        ctx.checkPermission(constants.role.EDITOR); 
+        ctx.checkPermission(constants.role.EDITOR);
         let category_id = ctx.request.body.category_id;
         ctx.request.body.category_id = nextId();
         ctx.validate('updateArticle');
