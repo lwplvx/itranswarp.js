@@ -230,6 +230,11 @@ const PROPERTY = {
         type: 'integer',
         minimum: 10,
         maximum: 1024
+    },
+    RECOMMEND: {
+        type: 'integer',
+        minimum: 0,
+        maximum: 1024
     }
 };
 
@@ -356,6 +361,7 @@ const schemas = {
         properties: {
             category_id: PROPERTY.ID,
             name: PROPERTY.NAME,
+            recommend: PROPERTY.RECOMMEND,
             description: PROPERTY.DESCRIPTION,
             tags: PROPERTY.TAGS,
             publish_at: PROPERTY.TIMESTAMP,

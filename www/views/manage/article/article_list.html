@@ -126,6 +126,8 @@ function initVM(data) {
                     <td>
                         <p><i class="uk-icon-list"></i> <a :href="'/category/' + a.category_id" v-text="a.category_name" target="_blank"></a></p>
                         <p><i class="uk-icon-user"></i> <span v-text="a.user_name"></span></p>
+
+                        <p><i class="uk-icon-bell"></i> <span v-text="a.recommend>0?'true':'false'"></span></p>
                     </td>
                     <td>
                         <p><span v-text="a.publish_at.toDateTime()"></span></p>

@@ -303,27 +303,6 @@ module.exports = {
         });
     },
     
-    'GET /api/articles/recommend': async function (ctx, next) {
-        /**
-         * Get articles recommend.
-         * 
-         * @name Get Articles
-         * @param {number} [page=1]: The page number, starts from 1.
-         * @return {object} Article objects and page information.
-         */
-        let
-            page = helper.getPage(ctx.request),
-            articles = await getArticlesByRecommend(page);
-
-        //为扩展属性 赋值
-        setArticlesExtraFields(articles);
-
-        ctx.rest({
-            page: page,
-            articles: articles
-        });
-    },
-
     'GET /api/articles': async function (ctx, next) {
         /**
          * Get articles by page.
@@ -413,6 +392,7 @@ module.exports = {
          * @param {string} id: Id of the article.
          * @param {string} [category_id]: Id of the category that article belongs to.
          * @param {string} [name]: Name of the article.
+         * @param {number} [recommend]: Recommend of the article.
          * @param {string} [description]: Description of the article.
          * @param {string} [content]: Content of the article.
          * @param {string} [tags]: Tags of the article, seperated by ','.
@@ -441,6 +421,10 @@ module.exports = {
         }
         if (data.name) {
             article.name = data.name.trim();
+        }
+        // lwp 增加的 推荐标记 
+        if (data.recommend !== undefined) {
+            article.recommend = data.recommend;
         }
         if (data.description) {
             article.description = data.description.trim();

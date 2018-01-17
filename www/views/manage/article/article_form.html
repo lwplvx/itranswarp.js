@@ -36,6 +36,7 @@ function initVM(article, categories) {
             image: null,
             categories: categories,
             name: article.name,
+            recommend: article.recommend,
             description: article.description,
             category_id: article.category_id,
             tags: article.tags,
@@ -53,7 +54,8 @@ function initVM(article, categories) {
                     name: this.name,
                     description: this.description,
                     category_id: this.category_id,
-                    tags: this.tags
+                    tags: this.tags,
+                    recommend: parseInt(this.recommend)
                 };
                 var pubDate = findForm().find('input[name=publish_date]').val().trim();
                 var pubTime = findForm().find('input[name=publish_time]').val().trim();
@@ -186,6 +188,12 @@ function initVM(article, categories) {
                     </div>
                 </div>
                 <div class="uk-form-row">
+                    <label class="uk-form-label">{{ _('Recommend') }}:</label>
+                    <div class="uk-form-controls">
+                        <input v-model="recommend" name="recommend" type="number" maxlength="100" class="uk-width-1-1" placeholder="recommend">
+                    </div>
+                </div>
+                <div class="uk-form-row">
                     <label class="uk-form-label">{{ _('Description') }}:</label>
                     <div class="uk-form-controls">
                         <textarea v-model="description" name="description" rows="6" class="uk-width-1-1" style="resize:none;"></textarea>
@@ -211,7 +219,7 @@ function initVM(article, categories) {
                     <label class="control-label">Publish At:</label>
                     <div class="controls">
                         <input v-once v-model="publish_date" name="publish_date" type="text" class="uk-width-1-6" data-uk-datepicker="{format:'YYYY-MM-DD', i18n:{ months:['{{ _('January') }}' , '{{ _('February') }}' , '{{ _('March') }}' , '{{ _('April') }}' , '{{ _('May') }}' , '{{ _('June') }}' , '{{ _('July') }}' , '{{ _('August') }}' , '{{ _('September') }}' , '{{ _('October') }}' , '{{ _('November') }}' , '{{ _('December') }}'], weekdays:['{{ _('Sun') }}' , '{{ _('Mon') }}' , '{{ _('Tue') }}' , '{{ _('Wed') }}' , '{{ _('Thu') }}' , '{{ _('Fri') }}' , '{{ _('Sat') }}'] } }">
-                        <input v-once v-model="publish_time" name="publish_time"type="text" data-uk-timepicker>
+                        <input v-once v-model="publish_time" name="publish_time" type="text" data-uk-timepicker>
                     </div>
                 </div>
                 <div class="uk-form-row">
