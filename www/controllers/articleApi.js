@@ -264,7 +264,10 @@ module.exports = {
          * @error {permission:denied} If current user has no permission.
          */
         ctx.checkPermission(constants.role.EDITOR);
+        let category_id = ctx.request.body.category_id;
+        ctx.request.body.category_id = nextId();
         ctx.validate('createArticle');
+        ctx.request.body.category_id = category_id;
         let
             user = ctx.state.__user__,
             article_id = nextId(),
@@ -319,8 +322,11 @@ module.exports = {
          * @error {parameter:invalid} If some parameter is invalid.
          * @error {permission:denied} If current user has no permission.
          */
-        ctx.checkPermission(constants.role.EDITOR);
+        ctx.checkPermission(constants.role.EDITOR); 
+        let category_id = ctx.request.body.category_id;
+        ctx.request.body.category_id = nextId();
         ctx.validate('updateArticle');
+        ctx.request.body.category_id = category_id;
         let
             id = ctx.params.id,
             user = ctx.state.__user__,
