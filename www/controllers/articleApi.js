@@ -127,6 +127,32 @@ async function getArticlesByCategory(categoryId, page) {
     });
 }
 
+async function getArticlesByRecommend(page) {
+    let now = Date.now();
+    page.total = await Article.count({
+        where: {
+            publish_at: {
+                $lt: now
+            },
+            recommend: 1
+        }
+    });
+    if (page.isEmpty) {
+        return [];
+    }
+    return await Article.findAll({
+        where: {
+            publish_at: {
+                $lt: now
+            },
+            recommend: 1
+        },
+        order: 'publish_at DESC',
+        offset: page.offset,
+        limit: page.limit
+    });
+}
+
 async function getArticle(id, includeContent) {
     let article = await Article.findById(id);
     if (article === null) {
@@ -222,6 +248,23 @@ module.exports = {
          * @return {object} Article object.
          * @error {resource:notfound} Article was not found by id.
          */
+
+        // 获取推荐列表
+        if (ctx.params.id === 'recommend') {
+            let
+                page = helper.getPage(ctx.request),
+                articles = await getArticlesByRecommend(page);
+
+            //为扩展属性 赋值
+            setArticlesExtraFields(articles);
+
+            ctx.rest({
+                page: page,
+                articles: articles
+            });
+            return;
+        } 
+
         let
             id = ctx.params.id,
             user = ctx.state.__user__,
@@ -246,11 +289,31 @@ module.exports = {
          * @param {number} [page=1]: The page number, starts from 1.
          * @return {object} Article objects and page information.
          */
-        let
-            user = ctx.state.__user__,
+        let 
             id = ctx.params.id,
             page = helper.getPage(ctx.request),
             articles = await getArticlesByCategory(id, page);
+
+        //为扩展属性 赋值
+        setArticlesExtraFields(articles);
+
+        ctx.rest({
+            page: page,
+            articles: articles
+        });
+    },
+    
+    'GET /api/articles/recommend': async function (ctx, next) {
+        /**
+         * Get articles recommend.
+         * 
+         * @name Get Articles
+         * @param {number} [page=1]: The page number, starts from 1.
+         * @return {object} Article objects and page information.
+         */
+        let
+            page = helper.getPage(ctx.request),
+            articles = await getArticlesByRecommend(page);
 
         //为扩展属性 赋值
         setArticlesExtraFields(articles);
