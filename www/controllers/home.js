@@ -201,6 +201,24 @@ module.exports = {
         ctx.render('article/article.html', await getModel(model));
     },
 
+    'GET /article/view/:id': async (ctx, next) => {
+        let
+            id = ctx.params.id,
+            article = await articleApi.getArticle(id, true),
+            num = await cache.incr(id),
+            category = await categoryApi.getCategory(article.category_id),
+            model = {
+                article: article,
+                category: category
+            };
+        article.views = article.views + num;
+        if (num > WRITE_VIEWS_BACK) {
+            await updateEntityViews(article);
+        }
+        article.content = md.systemMarkdownToHtml(article.content);
+        ctx.render('article/article_view.html', await getModel(model));
+    },
+
     'GET /webpage/:alias': async (ctx, next) => {
         let
             alias = ctx.params.alias,

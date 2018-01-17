@@ -79,7 +79,7 @@ function setArticlesExtraFields(articles) {
 */
 function setArticleExtraFields(article) {
     //article
-    article.url = `http://${config.domain}/article/${article.id}`;
+    article.url = `http://${config.domain}/article/view/${article.id}`;
     article.user_avatar = `http://${config.domain}/static/img/admin.png`;
 }
 

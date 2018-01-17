@@ -43,7 +43,11 @@ module.exports = {
             type: dbtypes.BIGINT,
             defaultValue: Date.now,
             index: true
-        }        
+        },
+        recommend: {
+            type: dbtypes.BIGINT,
+            defaultValue: () => 0
+        },    
     },
     extraFields: ['content','url','user_avatar']
 };
