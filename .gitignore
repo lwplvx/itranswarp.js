@@ -31,7 +31,7 @@ config_*.js
 # generated js add css:
 all.js
 all.css
-itranswarp.css
+#itranswarp.css
 version.js
 
 # temp output dir:
