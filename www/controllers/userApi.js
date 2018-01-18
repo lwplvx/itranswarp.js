@@ -3,6 +3,7 @@
 // user api
 
 const
+    crypto = require('crypto'),
     _ = require('lodash'),
     oauth2 = require('oauth2-warp'),
     bluebird = require('bluebird'),
@@ -86,6 +87,12 @@ async function bindUsers(entities, propName = 'user_id') {
         entity.user = user;
     }
 }
+
+
+function generatePassword(localId, email, passwd) {
+    let hashedPasswd = crypto.createHash('sha1').update(email + ':' + passwd).digest('hex');
+    return crypto.createHash('sha1').update(localId + ':' + hashedPasswd).digest('hex');
+} 
 
 async function processOAuthAuthentication(provider_name, authentication) {
     let
@@ -253,6 +260,46 @@ module.exports = {
             expires: new Date(expires)
         });
         logger.debug(`set session cookie for user: ${user.email}: ${cookieStr}`);
+        ctx.rest(user);
+    },
+    
+    'POST /api/signup': async (ctx, next) => {
+        /**
+         * Create user by email and password, for local user only.
+         * 
+         * @param email: Email address, in lower case.
+         * @param passwd: The password, 40-chars SHA1 string, in lower case.
+         */
+        ctx.validate('authenticate');
+        let
+            data = ctx.request.body,
+            email = data.email,
+            passwd = data.passwd,
+            user = await getUserByEmail(email);
+        if (user !== null) {
+            throw api.authFailed('email', 'Email is invalid or already taken.');
+        }
+
+        // create email user:
+        let userId = db.nextId(),
+            localId = db.nextId();
+
+        user = {
+            id: userId,
+            role: constants.role.SUBSCRIBER,
+            email: email,
+            verified: true,
+            name: email,
+            image_url: '/static/img/user.png'
+        };
+
+        await User.create(user);
+        await LocalUser.create({
+            id: localId,
+            user_id: userId,
+            passwd: generatePassword(localId, email, passwd)
+        }); 
+
         ctx.rest(user);
     },
 
