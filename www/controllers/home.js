@@ -495,6 +495,19 @@ module.exports = {
         ctx.render('signin.html', await getModel({}));
     },
 
+    // lwp Ìí¼ÓµÄ×¢²á
+    'GET /auth/signup': async (ctx, next) => {
+        let
+            referer = ctx.request.get('referer') || '/',
+            user = ctx.state.__user__;
+        logger.info('Referer: ' + referer);
+        if (user !== null) {
+
+        }
+        ctx.render('signup.html', await getModel({}));
+    },
+
+
     'GET /search': async (ctx, next) => {
         ctx.response.body = 'blank';
         // let

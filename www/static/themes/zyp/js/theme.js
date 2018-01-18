@@ -369,12 +369,14 @@ function initCommentArea(ref_type, ref_id, tag) {
     });
 }
 
+// 登录框
 var signinModal = null;
 
 function showSignin(forceModal) {
-    if (g_signins.length === 1 && !forceModal) {
-        return authFrom(g_signins[0].id);
-    }
+    // 只有一个的时候 直接跳转，现在不要了
+    //if (g_signins.length === 1 && !forceModal) {
+    //    return authFrom(g_signins[0].id);
+    //}
     if (signinModal === null) {
         signinModal = UIkit.modal('#modal-signin', {
             bgclose: false,
@@ -383,6 +385,23 @@ function showSignin(forceModal) {
     }
     signinModal.show();
 }
+
+
+// 注册框
+var signupModal = null;
+
+function showSignup(forceModal) {
+   
+    if (signupModal === null) {
+        signupModal = UIkit.modal('#modal-signup', {
+            bgclose: false,
+            center: true
+        });
+    }
+    signupModal.show();
+}
+
+
 
 // JS Template:
 

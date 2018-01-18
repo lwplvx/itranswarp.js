@@ -279,16 +279,16 @@
                 </ul>
                 {% endif %}
 
-<!--
-                <div class="uk-navbar-content x-hidden-tiny">
-                    <form id="form-search" class="uk-form uk-margin-remove uk-display-inline-block">
-                        <div class="uk-form-icon">
-                            <i class="uk-icon-search"></i>
-                            <input type="text" placeholder="Search">
-                        </div>
-                    </form>
-                </div>
--->
+                <!--
+                                <div class="uk-navbar-content x-hidden-tiny">
+                                    <form id="form-search" class="uk-form uk-margin-remove uk-display-inline-block">
+                                        <div class="uk-form-icon">
+                                            <i class="uk-icon-search"></i>
+                                            <input type="text" placeholder="Search">
+                                        </div>
+                                    </form>
+                                </div>
+                -->
 
                 <div class="uk-navbar-flip">
                     <ul class="uk-navbar-nav">
@@ -298,14 +298,14 @@
                                 <ul class="uk-nav uk-nav-navbar">
                                     <li><a target="_blank" href="/me/profile"><i class="uk-icon-cog"></i> {{ _('Profile') }}</a></li>
                                     <li class="uk-nav-divider"></li>
-                                {% if __user__ and __user__.role <= 100 %}
+                                    {% if __user__ and __user__.role <= 100 %}
                                     <li><a target="_blank" href="/manage/"><i class="uk-icon-cogs"></i> {{ _('Manage') }}</a></li>
                                     <li class="uk-nav-divider"></li>
-                                {% endif %}
-                                {% if __user__ and __user__.role == 1000 %}
+                                    {% endif %}
+                                    {% if __user__ and __user__.role == 1000 %}
                                     <li><a target="_blank" href="/sponsor/adperiod/default"><i class="uk-icon-photo"></i> {{ _('Sponsor') }}</a></li>
                                     <li class="uk-nav-divider"></li>
-                                {% endif %}
+                                    {% endif %}
                                     <li><a href="/auth/signout"><i class="uk-icon-power-off"></i> {{ _('Sign Out') }}</a></li>
                                 </ul>
                             </div>
@@ -327,7 +327,7 @@
                     {% block body_top %}{{ __snippets__.body_top|safe }}{% endblock %}
                 </div>
                 <div class="uk-width-1-1">
-                {% if __sidebar_left__ %}
+                    {% if __sidebar_left__ %}
                     <div class="x-sidebar-left">
                         <div class="x-sidebar-left-top">
                             {% block sidebar_left_top %}{{ __snippets__.sidebar_left_top|safe }}{% endblock %}
@@ -340,8 +340,8 @@
                         </div>
                         <div id="x-sponsor-b" class="uk-clearfix"><!-- sponsor B --></div>
                     </div>
-                {% endif %}
-                {% if __sidebar_right__ %}
+                    {% endif %}
+                    {% if __sidebar_right__ %}
                     <div class="x-sidebar-right">
                         <div class="x-sidebar-right-top">
                             {% block sidebar_right_top %}<!-- __snippets__.sidebar_right_top -->{{ __snippets__.sidebar_right_top|safe }}{% endblock %}
@@ -354,7 +354,7 @@
                         </div>
                         <div id="x-sponsor-b" class="uk-clearfix"><!-- sponsor B --></div>
                     </div>
-                {% endif %}
+                    {% endif %}
 
                     <div class="x-center">
                         <div class="x-content-top">
@@ -376,7 +376,7 @@
         </div>
     </div>
 
-{% if __offcanvas_left__ %}
+    {% if __offcanvas_left__ %}
     <div id="x-offcanvas-left" class="uk-offcanvas">
         <div class="uk-offcanvas-bar">
             <div class="uk-panel">
@@ -384,7 +384,7 @@
             </div>
         </div>
     </div>
-{% endif %}
+    {% endif %}
 
     <div id="footer">
         <div class="x-footer uk-container x-container">
@@ -414,19 +414,20 @@
         </div>
     </div>
 
+    <!-- 登录框 -->
     <div id="modal-signin" class="uk-modal">
         <div class="uk-modal-dialog">
             <a class="uk-modal-close uk-close"></a>
             <div class="uk-modal-header">
                 <h2>{{ _('Please Sign In') }}</h2>
             </div>
-            
+
             <div class="uk-grid uk-grid-divider">
 
                 <!-- 用户名 密码登录 -->
-                <div class="uk-width-1-2"> 
+                <div class="uk-width-1-2">
 
-                    <form v-on:submit.prevent="submit" class="uk-form uk-form-stacked uk-margin">
+                    <form v-on:submit.prevent="signIn" class="uk-form uk-form-stacked uk-margin">
 
                         <fieldset>
                             <div class="uk-alert uk-alert-danger uk-hidden"></div>
@@ -447,7 +448,7 @@
 
                             <div class="uk-form-row">
                                 <div class="controls">
-                                    <button type="submit" class="uk-button uk-button-primary uk-width-1-1"> {{ _('Sign In') }}</button>
+                                    <button type="submit" class="uk-button uk-button-success uk-width-1-1"> {{ _('Sign In') }}</button>
                                 </div>
                             </div>
                         </fieldset>
@@ -457,6 +458,13 @@
 
                 <!-- 社交账号登录 -->
                 <div class="uk-width-1-2">
+                    <h3>
+                        <a href="/auth/signup"
+                           class="uk-button uk-button-link">
+                            <i class="uk-icon-envelope">
+                            </i> {{ _('Email') }} {{ _('Sign Up') }}
+                        </a>
+                    </h3>
                     <p>{{ _('You can sign in directly without register') }}:</p>
                     {% for signin in __signins__ %}
                     <h3><a href="/auth/from/{{ signin.id }}" class="uk-button uk-button-{{signin.theme}}"><i class="uk-icon-{{ signin.icon }}"></i> {{ _(signin.name) }} </a></h3>
@@ -466,6 +474,77 @@
             </div>
         </div>
     </div>
+
+
+    <!-- 注册框 -->
+    <div id="modal-signup" class="uk-modal">
+        <div class="uk-modal-dialog">
+            <a class="uk-modal-close uk-close"></a>
+            <div class="uk-modal-header">
+                <h2>{{ _('Please Sign Up') }}</h2>
+            </div>
+
+            <div class="uk-grid uk-grid-divider">
+
+                <!-- 用户名 密码注册 -->
+                <div class="uk-width-1-2">
+
+                    <form v-on:submit.prevent="signUp" class="uk-form uk-form-stacked uk-margin">
+
+                        <fieldset>
+                            <div class="uk-alert uk-alert-danger uk-hidden"></div>
+
+                            <div class="uk-form-row">
+                                <label class="uk-form-label">{{ _('Email') }}:</label>
+                                <div class="uk-form-controls">
+                                    <input v-model="Email" name="Email" type="email" class="uk-width-1-1" placeholder="email">
+                                </div>
+                            </div>
+
+                            <div class="uk-form-row">
+                                <label class="control-label">{{ _('Password') }}:</label>
+                                <div class="controls">
+                                    <input v-model="password" name="password" type="password" class="uk-width-1-1" placeholder="password">
+                                </div>
+                            </div>
+
+                            <div class="uk-form-row">
+                                <label class="control-label">{{ _('Password') }}:</label>
+                                <div class="controls">
+                                    <input v-model="password2" name="password2" type="password" class="uk-width-1-1" placeholder="password">
+                                </div>
+                            </div>
+
+                            <div class="uk-form-row">
+                                <div class="controls">
+                                    <button type="submit" class="uk-button uk-button-primary uk-width-1-1"> {{ _('Sign Up') }}</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+
+                </div>
+
+                <!-- 社交账号登录 -->
+                <div class="uk-width-1-2">
+                    <h3>
+                        <a href="/auth/signin"
+                           class="uk-button uk-button-link">
+                            <i class="uk-icon-sign-in">
+                            </i> {{ _('Email') }} {{ _('Sign In') }}
+                        </a>
+                    </h3>
+
+                    <p>{{ _('You can sign in directly without register') }}:</p>
+                    {% for signin in __signins__ %}
+                    <h3><a href="/auth/from/{{ signin.id }}" class="uk-button uk-button-{{signin.theme}}"><i class="uk-icon-{{ signin.icon }}"></i> {{ _(signin.name) }} </a></h3>
+                    {% endfor %}
+                    <p>{{ _('You need authorize to allow connect to your social passport for the first time.') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div id="oldBrowser">
         <div class="uk-alert uk-alert-danger" data-uk-alert>
