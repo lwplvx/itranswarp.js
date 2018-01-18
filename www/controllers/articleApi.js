@@ -101,7 +101,7 @@ async function getRecommendArticles(max) {
         },
         order: 'updated_at DESC',
         limit: max
-    }); 
+    });
 }
 
 
@@ -109,10 +109,17 @@ async function getRecommendArticles(max) {
 * 为扩展属性 赋值
 * url , user_avatar 
 */
-function setArticlesExtraFields(articles) {
+async function setArticlesExtraFields(articles) {
     //articles
+    let cachedUsers = {};
+
     articles.forEach((item) => {
-        setArticleExtraFields(item); 
+        let user = cachedUsers[item.user_id];
+        //if (!user) {
+        //    user = await User.findById(item.user_id);
+        //    cachedUsers[user_id] = user;
+        //}
+        setArticleExtraFields(item, user ? user.image_url : null);
     });
 }
 
@@ -120,10 +127,10 @@ function setArticlesExtraFields(articles) {
 * 为扩展属性 赋值
 * url , user_avatar 
 */
-function setArticleExtraFields(article) {
+function setArticleExtraFields(article, image_url) {
     //article
     article.url = `http://${config.domain}/article/view/${article.id}`;
-    article.user_avatar = `http://${config.domain}/static/img/admin.png`;
+    article.user_avatar = image_url || `http://${config.domain}/static/img/user.png`;
 }
 
 async function getArticles(page, includeUnpublished = false) {
@@ -275,14 +282,14 @@ module.exports = {
                 articles = await getPageRecommendArticles(page);
 
             //为扩展属性 赋值
-            setArticlesExtraFields(articles);
+            await setArticlesExtraFields(articles);
 
             ctx.rest({
                 page: page,
                 articles: articles
             });
             return;
-        } 
+        }
 
         let
             id = ctx.params.id,
@@ -294,11 +301,11 @@ module.exports = {
         if (ctx.request.query.format === 'html') {
             article.content = helper.md2html(article.content, true);
         }
-        setArticleExtraFields(article);
+        setArticleExtraFields(article, user.image_url);
 
         ctx.rest(article);
     },
-    
+
     'GET /api/articles/category/:id': async function (ctx, next) {
         /**
          * Get articles by page with category .
@@ -308,7 +315,7 @@ module.exports = {
          * @param {number} [page=1]: The page number, starts from 1.
          * @return {object} Article objects and page information.
          */
-        let 
+        let
             id = ctx.params.id,
             page = helper.getPage(ctx.request),
             articles = await getArticlesByCategory(id, page);
@@ -321,7 +328,7 @@ module.exports = {
             articles: articles
         });
     },
-    
+
     'GET /api/articles': async function (ctx, next) {
         /**
          * Get articles by page.
