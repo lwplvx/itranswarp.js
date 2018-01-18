@@ -75,24 +75,18 @@ async function getUser(id) {
 
 async function bindUsers(entities, propName = 'user_id') {
     let cachedUsers = {};
-    for (let i=0; i<entities.length; i++) {
+    for (let i = 0; i < entities.length; i++) {
         let
             entity = entities[i],
             user_id = entity[propName],
             user = cachedUsers[user_id];
-        if (! user) {
+        if (!user) {
             user = await getUser(user_id);
             cachedUsers[user_id] = user;
         }
         entity.user = user;
     }
 }
-
-
-function generatePassword(localId, email, passwd) {
-    let hashedPasswd = crypto.createHash('sha1').update(email + ':' + passwd).digest('hex');
-    return crypto.createHash('sha1').update(localId + ':' + hashedPasswd).digest('hex');
-} 
 
 async function processOAuthAuthentication(provider_name, authentication) {
     let
@@ -246,7 +240,7 @@ module.exports = {
             throw api.authFailed('passwd', 'Password signin is not allowed for this user.')
         }
         // check password:
-        if (! auth.verifyPassword(localuser.id, passwd, localuser.passwd)) {
+        if (!auth.verifyPassword(localuser.id, passwd, localuser.passwd)) {
             throw api.authFailed('passwd', 'Bad password.');
         }
         // make session cookie:
@@ -262,7 +256,7 @@ module.exports = {
         logger.debug(`set session cookie for user: ${user.email}: ${cookieStr}`);
         ctx.rest(user);
     },
-    
+
     'POST /api/signup': async (ctx, next) => {
         /**
          * Create user by email and password, for local user only.
@@ -297,8 +291,8 @@ module.exports = {
         await LocalUser.create({
             id: localId,
             user_id: userId,
-            passwd: generatePassword(localId, email, passwd)
-        }); 
+            passwd: auth.generatePassword(localId, passwd)
+        });
 
         ctx.rest(user);
     },
@@ -325,7 +319,7 @@ module.exports = {
             name = ctx.params.name,
             provider = oauth2_providers[name],
             jscallback = ctx.request.query.jscallback;
-        if (! provider) {
+        if (!provider) {
             ctx.response.status = 404;
             ctx.response.body = 'Invalid URL';
             return;
@@ -335,7 +329,7 @@ module.exports = {
             redirect_uri = redirect_uri + '?jscallback=' + jscallback;
         }
         else {
-          //  redirect_uri = redirect_uri + '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
+            //  redirect_uri = redirect_uri + '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
         }
         logger.info(`send OAuth2 redirect uri: ${redirect_uri}`);
         ctx.response.redirect(provider.getAuthenticateURL({
@@ -353,12 +347,12 @@ module.exports = {
             code = ctx.request.query.code,
             jscallback = ctx.request.query.jscallback || '',
             authentication, r, auth_user, user, cookieStr;
-        if (! provider) {
+        if (!provider) {
             ctx.response.status = 404;
             ctx.response.body = 'Invalid URL';
             return;
         }
-        if (! code) {
+        if (!code) {
             logger.warn('OAuth2 callback error: code is not found.');
             ctx.response.body = '<html><body>Invalid code.</body></html>';
             return;
@@ -393,12 +387,12 @@ module.exports = {
         logger.debug(`set session cookie for user: ${user.email}`);
         if (jscallback) {
             ctx.response.body = '<html><body><script> window.opener.'
-                      + jscallback
-                      + '(null,' + JSON.stringify({
-                          id: user.id,
-                          name: user.name,
-                          image_url: user.image_url
-                      }) + ');self.close(); </script></body></html>';
+                + jscallback
+                + '(null,' + JSON.stringify({
+                    id: user.id,
+                    name: user.name,
+                    image_url: user.image_url
+                }) + ');self.close(); </script></body></html>';
         }
         else {
             ctx.response.redirect(ctx.request.query.redirect || '/');

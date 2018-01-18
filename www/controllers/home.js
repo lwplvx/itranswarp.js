@@ -396,7 +396,7 @@ module.exports = {
             ctx.response.redirect('/auth/signin');
             return;
         }
-        let model = {
+        let model = {   
             user: user,
             topics: await discussApi.getTopicsByUser(user.id)
         }
