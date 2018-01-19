@@ -78,6 +78,17 @@ function initVM(boards) {
                         });
                     }, onJsonFormError);
                 });
+            },
+            deleteBoard: function (id) {
+                var b = this.boards[this.find(id)];
+                var that = this;
+                UIkit.modal.confirm('Board \"' + b.name +'('+b.tag+')'+ '\" will be delete . Continue?', function () {
+                    that.$resource('/api/boards/' + b.id + '/delete').save({}).then(function (resp) {
+                        resp.json().then(function (result) {
+                            location.assign('{{ form.redirect }}');
+                        });
+                    }, onJsonFormError);
+                });
             }
         }
     });
@@ -130,6 +141,8 @@ function initVM(boards) {
                         <a v-on:click="editBoard(b.id)" title="Edit this board" href="#0" class="x-btn"><i class="uk-icon-edit"></i></a>
                         <a v-if="!b.locked" v-on:click="lockBoard(b.id, true)" title="Lock this board" href="#0" class="x-btn"><i class="uk-icon-ban"></i></a>
                         <a v-if="b.locked" v-on:click="lockBoard(b.id, false)" title="Unock this board" href="#0" class="x-btn"><i class="uk-icon-circle-o"></i></a>
+
+                        <a v-on:click="deleteBoard(b.id)" title="Delete this board" href="#0" class="x-btn"><i class="uk-icon-trash"></i></a>
                     </td>
                 </tr>
             </tbody>

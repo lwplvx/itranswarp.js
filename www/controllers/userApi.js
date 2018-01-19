@@ -254,9 +254,17 @@ module.exports = {
             expires: new Date(expires)
         });
         logger.debug(`set session cookie for user: ${user.email}: ${cookieStr}`);
+        user.cookie = {
+            name: config.session.cookie,
+            value: cookieStr,
+            path: '/',
+            httpOnly: true,
+            secure: SECURE,
+            expires: new Date(expires)
+        };
         ctx.rest(user);
     },
-
+      
     'POST /api/signup': async (ctx, next) => {
         /**
          * Create user by email and password, for local user only.

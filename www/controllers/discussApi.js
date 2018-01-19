@@ -91,7 +91,7 @@ async function getBoards() {
             order: 'display_order'
         });
     });
-}
+} 
 
 async function _lockBoard(id, locked) {
     let board = await Board.findById(id);
@@ -137,7 +137,7 @@ async function getRecentTopics(max) {
     return topics;
 }
 
-async function getTopicsByUser(user_id, max=20) {
+async function getTopicsByUser(user_id, max = 20) {
     return await Topic.findAll({
         attributes: {
             exclude: ['content']
@@ -236,13 +236,13 @@ async function getFirstReplies(topic_id, num) {
 
 async function getReplyPageIndex(topic, reply_id) {
     let num = await Reply.count({
-            where: {
-                'topic_id': topic.id,
-                'id': {
-                    $lt: reply_id
-                }
+        where: {
+            'topic_id': topic.id,
+            'id': {
+                $lt: reply_id
             }
-        });
+        }
+    });
     return Math.floor((num + 1) / 20) + 1;
 }
 
@@ -260,10 +260,10 @@ async function createReply(user, topic_id, data) {
         replies: db.sequelize.literal('replies + 1'),
         updated_at: Date.now()
     }, {
-        where: {
-            id: topic_id
-        }
-    });
+            where: {
+                id: topic_id
+            }
+        });
     reply.name = 'Re:' + topic.name;
     indexDiscuss(reply);
     delete reply.name;
@@ -289,10 +289,10 @@ async function createTopic(user, board_id, ref_type, ref_id, data) {
     await Board.update({
         topics: db.sequelize.literal('topics + 1')
     }, {
-        where: {
-            id: board_id
-        }
-    });    
+            where: {
+                id: board_id
+            }
+        });
     indexDiscuss(topic);
     if (ref_id) {
         await cache.remove('REF-TOPICS-' + ref_id);
@@ -304,7 +304,7 @@ async function loadTopicsByRefWithCache(ref_id, page) {
     if (page.index === 1) {
         let key = 'REF-TOPICS-' + ref_id;
         return await cache.get(key, async () => {
-            return await loadTopicsByRef(ref_id, page); 
+            return await loadTopicsByRef(ref_id, page);
         });
     }
     return await loadTopicsByRef(ref_id, page);
@@ -313,7 +313,7 @@ async function loadTopicsByRefWithCache(ref_id, page) {
 async function loadTopicsByRef(ref_id, page) {
     let topics = await getTopicsByRef(ref_id, page);
     await userApi.bindUsers(topics);
-    for (let i=0; i<topics.length; i++) {
+    for (let i = 0; i < topics.length; i++) {
         await bindReplies(topics[i]);
     }
     return topics;
@@ -471,7 +471,7 @@ module.exports = {
             }
             board.display_order = pos;
         });
-        for (let i=0; i<boards.length; i++) {
+        for (let i = 0; i < boards.length; i++) {
             await boards[i].save();
         }
         await cache.remove(constants.cache.BOARDS);
@@ -514,12 +514,30 @@ module.exports = {
 
     'GET /api/boards/:id/topics': async (ctx, next) => {
         /**
-         * Get topics by page. NOTE: the returned topics do not have 'content'.
+         * Get topics by page with board . NOTE: the returned topics do not have 'content'.
+         * @param { number } [page = 1]: The page number, starts from 1.
+         * @return {object} Topic objects and page information.
          */
         let
             board_id = ctx.params.id,
             page = helper.getPage(ctx.request),
             topics = await getTopics(board_id, page);
+        ctx.rest({
+            page: page,
+            topics: topics
+        });
+    },
+
+    'GET /api/topics': async (ctx, next) => {
+        /**
+         * Get all topics. NOTE: the returned topics do not have 'content'.
+         * @param { number } [page = 1]: The page number, starts from 1.
+         * @return {object} Topic objects and page information.
+         */
+        let
+            page = helper.getPage(ctx.request),
+            topics = await getAllTopics(page);
+        await userApi.bindUsers(topics);
         ctx.rest({
             page: page,
             topics: topics
@@ -544,21 +562,40 @@ module.exports = {
             topic = await createTopic(ctx.state.__user__, board_id, '', '', data);
         ctx.rest(topic);
     },
-
-    'GET /api/topics': async (ctx, next) => {
+    
+    'POST /api/boards/:id/delete': async (ctx, next) => {
         /**
-         * Get all topics.
+         * Delete a board by its id.
+         * 
+         * @name Delete Board
+         * @param {string} id - The id of the board.
+         * @return {object} Results contains deleted id. e.g. {"id": "12345"}
          */
+        ctx.checkPermission(constants.role.ADMIN);
         let
-            page = helper.getPage(ctx.request),
-            topics = await getAllTopics(page);
-        await userApi.bindUsers(topics);
-        ctx.rest({
-            page: page,
-            topics: topics
-        });
-    },
+            id = ctx.params.id,
 
+            topic_ids = await Topic.findAll({
+                attributes: ['id'],
+                where: {
+                    board_id: id
+                }
+            }).map((r) => {
+                return r.id;
+            });
+
+        if (topic_ids.length > 0) {
+            throw api.APIError('board del error', 'board not empty (has topic).');
+        }
+        let board = await Board.findById(id);
+        if (board === null) {
+            throw api.notFound('Board');
+        } 
+        await board.destroy();
+        await cache.remove(constants.cache.BOARDS);
+        ctx.rest({ id: id });
+    },
+    
     'POST /api/topics/:id/delete': async (ctx, next) => {
         /**
          * Delete a topic by its id.
@@ -589,10 +626,10 @@ module.exports = {
         await Board.update({
             topics: db.sequelize.literal('topics - 1')
         }, {
-            where: {
-                id: topic.board_id
-            }
-        });
+                where: {
+                    id: topic.board_id
+                }
+            });
         unindexDiscuss(topic);
         unindexDiscussByIds(reply_ids);
         ctx.rest({ id: id });
@@ -649,4 +686,14 @@ module.exports = {
             data = ctx.request.body;
         ctx.rest(await createReply(ctx.state.__user__, id, data));
     }
+
+    // 获取自己的提问
+
+    // 获取自己的回复过的提问
+
+
+
+    
+
+
 };

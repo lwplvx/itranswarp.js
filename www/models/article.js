@@ -49,5 +49,5 @@ module.exports = {
             defaultValue: () => 0
         },    
     },
-    extraFields: ['content','url','user_avatar']
+    extraFields: ['content', 'url', 'user_avatar','user']
 };

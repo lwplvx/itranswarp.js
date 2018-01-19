@@ -33,5 +33,6 @@ module.exports = {
         image_url: {
             type: dbtypes.STRING(1000)
         }
-    }
+    },
+    extraFields: ['cookie']
 };

@@ -19,6 +19,7 @@ const
     Text = db.Text,
     nextId = db.nextId,
     textApi = require('./textApi'),
+    userApi = require('./userApi'),
     settingApi = require('./settingApi'),
     categoryApi = require('./categoryApi'),
     attachmentApi = require('./attachmentApi');
@@ -110,27 +111,20 @@ async function getRecommendArticles(max) {
 * url , user_avatar 
 */
 async function setArticlesExtraFields(articles) {
-    //articles
-    let cachedUsers = {};
 
-    articles.forEach((item) => {
-        let user = cachedUsers[item.user_id];
-        //if (!user) {
-        //    user = await User.findById(item.user_id);
-        //    cachedUsers[user_id] = user;
-        //}
-        setArticleExtraFields(item, user ? user.image_url : null);
+    await userApi.bindUsers(articles);
+    articles.forEach((article) => {
+        //article
+        article.url = `http://${config.domain}/article/view/${article.id}`;
+
+        article.user_avatar = article.user.image_url;
+        if ((article.user_avatar + "1111").substring(0, 4) !== 'http') {
+            article.user_avatar = `http://${config.domain}${article.user_avatar}`;
+        }
+
+        article.user = undefined;
+        // article.user_avatar = image_url || `http://${config.domain}/static/img/user.png`; 
     });
-}
-
-/**
-* 为扩展属性 赋值
-* url , user_avatar 
-*/
-function setArticleExtraFields(article, image_url) {
-    //article
-    article.url = `http://${config.domain}/article/view/${article.id}`;
-    article.user_avatar = image_url || `http://${config.domain}/static/img/user.png`;
 }
 
 async function getArticles(page, includeUnpublished = false) {
@@ -301,7 +295,8 @@ module.exports = {
         if (ctx.request.query.format === 'html') {
             article.content = helper.md2html(article.content, true);
         }
-        setArticleExtraFields(article, user.image_url);
+        //为扩展属性 赋值
+        await setArticlesExtraFields([article]);
 
         ctx.rest(article);
     },
@@ -321,7 +316,7 @@ module.exports = {
             articles = await getArticlesByCategory(id, page);
 
         //为扩展属性 赋值
-        setArticlesExtraFields(articles);
+        await setArticlesExtraFields(articles);
 
         ctx.rest({
             page: page,
@@ -344,7 +339,7 @@ module.exports = {
             articles = await getArticles(page, includeUnpublished);
 
         //为扩展属性 赋值
-        setArticlesExtraFields(articles);
+        await setArticlesExtraFields(articles);
 
         ctx.rest({
             page: page,
@@ -512,6 +507,9 @@ module.exports = {
                 'ref_id': id
             }
         });
+
+        await cache.remove('INDEX-MODEL');
+
         ctx.rest({ id: id });
     }
 };
