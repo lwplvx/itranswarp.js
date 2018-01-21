@@ -10,7 +10,7 @@ const
     minifyCSS = require('gulp-minify-css'),
     gulp = require('gulp');
 
-let theme = 'default';
+let theme = 'zyp';
 
 function getCssFiles(file) {
     let
@@ -19,6 +19,9 @@ function getCssFiles(file) {
         begin = data.indexOf('<!-- BEGIN CSS COMPRESS -->'),
         end = data.indexOf('<!-- END CSS COMPRESS -->'),
         lines;
+    // 正则匹配 去掉了 结尾匹配 $
+    re = /^.*\<link\s+rel\=\"stylesheet\"\s+href\=\"(.*)\"\s*\/\>.*/;
+
     if (begin === (-1) || end === (-1) || begin > end) {
         throw 'Error: special comment not found!';
     }
@@ -26,7 +29,7 @@ function getCssFiles(file) {
     lines = _.map(lines, function (line) {
         let m = re.exec(line);
         if (m) {
-            return m[1].replace(/\{\{\s*\_\_theme\_\_\s*\}\}/, theme);
+           return m[1].replace(/\{\{\s*\_\_theme\_\_\s*\}\}/, theme);
         }
         return null;
     });
@@ -45,6 +48,10 @@ function getJavaScriptFiles(file) {
         begin = data.indexOf('<!-- BEGIN JAVASCRIPT COMPRESS -->'),
         end = data.indexOf('<!-- END JAVASCRIPT COMPRESS -->'),
         lines;
+
+    // 正则匹配 去掉了 结尾匹配 $
+    re = /^.*\<script\s+src\=\"(.*)\"\>.*/;
+
     if (begin === (-1) || end === (-1) || begin > end) {
         throw 'Error: special comment not found!';
     }
@@ -94,6 +101,11 @@ gulp.task('uglify', function () {
 
 gulp.task('less', function () {
     let cssfiles = getCssFiles('./views/themes/' + theme + '/_base.html');
+
+    console.log(cssfiles,'cssfiles');
+
+    console.log("less   task, cssfiles:" + cssfiles.length);
+
     return gulp.src(cssfiles)
         .pipe(concat('all.css'))
         .pipe(gulp.dest('./static/themes/' + theme + '/css'));

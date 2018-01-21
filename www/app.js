@@ -99,7 +99,7 @@ app.use(async (ctx, next) => {
             return serviceUnavailable(ctx);
         }
         if (path.startsWith('/wiki') || path.startsWith('/article') || path.startsWith('/discuss') || path.startsWith('/category') || path.startsWith('/webpage')) {
-            if (! isBot(ua, ctx.request.headers)) {
+            if (!isBot(ua, ctx.request.headers)) {
                 if (ua.indexOf('mozilla') === (-1)) {
                     logger.warn(`deny bot without mozilla: ${ipAddr}: ${ua}`);
                     return serviceUnavailable(ctx);
@@ -109,7 +109,7 @@ app.use(async (ctx, next) => {
                     let sp = parseInt(atsp);
                     logger.info(`check now=${start}, sp=${sp}, atsp=${atsp}...`);
                     if (isNaN(sp) || (sp < (start - 800000)) || (sp > (start + 120000))) {
-                        logger.warn(`detect bad atsp: now=${start}, atsp=${atsp}, diff=${(start-sp)/1000}: ${ipAddr}: ${ua}`);
+                        logger.warn(`detect bad atsp: now=${start}, atsp=${atsp}, diff=${(start - sp) / 1000}: ${ipAddr}: ${ua}`);
                         ctx.cookies.set('atsp', '0', {
                             path: '/',
                             httpOnly: false,
@@ -148,9 +148,15 @@ app.use(async (ctx, next) => {
 });
 
 // static file support:
-if (! isProduction) {
+//if (! isProduction) {
+//    let staticFiles = require('./middlewares/static-files');
+//    app.use(staticFiles('/static/', __dirname + '/static')); 
+//}
+
+// 没有 nginx 的时候 都启用静态文件
+{
     let staticFiles = require('./middlewares/static-files');
-    app.use(staticFiles('/static/', __dirname + '/static')); 
+    app.use(staticFiles('/static/', __dirname + '/static'));
 }
 
 
@@ -201,7 +207,7 @@ app.use(async (ctx, next) => {
             return;
         }
     }
-    if (! isApi) {
+    if (!isApi) {
         ctx.state._ = i18n.createI18N(request.get('Accept-Language') || 'en', i18nTranslators);
         ctx.state.__static_prefix__ = static_prefix;
         ctx.state.__time__ = Date.now();
