@@ -519,4 +519,5 @@ describe('#discuss', () => {
         expect(await Reply.findById(replyId0)).to.be.null;
         expect(await Reply.findById(replyId1)).to.be.null;
     });
+      
 });

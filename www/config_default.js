@@ -14,6 +14,7 @@ module.exports = {
     domain: 'iot-blogs.cloudgarden.cn',
     // behind a reverse proxy:
     proxy: false,
+    write_views_back:10, // 
     // the theme used, default to 'default':
     theme: 'default', // default
     spider: {
