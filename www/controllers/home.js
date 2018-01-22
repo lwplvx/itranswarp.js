@@ -102,6 +102,8 @@ async function getModel(model) {
     model.__snippets__ = await settingApi.getSnippets();
     model.__ads__ = await getAds();
     model.__signins__ = signins;
+    model.__shownav__ = true;
+    
     return model;
 }
 
@@ -219,7 +221,10 @@ module.exports = {
             await updateEntityViews(article);
         }
         article.content = md.systemMarkdownToHtml(article.content);
-        ctx.render('article/article_view.html', await getModel(model));
+        model= await getModel(model); 
+        model.__shownav__ = false; 
+
+        ctx.render('article/article.html', model);
     },
 
     'GET /webpage/:alias': async (ctx, next) => {
@@ -365,6 +370,37 @@ module.exports = {
             replies: replies
         };
         ctx.render('discuss/topic.html', await getModel(model));
+    },
+    
+    'GET /discuss/view/:bid/:tid': async (ctx, next) => {
+        let
+            bid = ctx.params.bid,
+            tid = ctx.params.tid,
+            topic = await discussApi.getTopic(tid),
+            board,
+            replies,
+            model;
+        if (topic.board_id !== bid) {
+            ctx.response.status = 404;
+            return;
+        }
+        let page = helper.getPage(ctx.request);
+        board = await discussApi.getBoard(bid);
+        replies = await discussApi.getReplies(tid, page);
+        if (page.index === 1) {
+            replies.unshift(topic);
+        }
+        await userApi.bindUsers(replies);
+        model = {
+            page: page,
+            board: board,
+            topic: topic,
+            replies: replies, 
+        };
+        model= await getModel(model); 
+        model.__shownav__ = false; 
+
+        ctx.render('discuss/topic.html', model);
     },
 
     'GET /discuss/:bid/topics/create': async (ctx, next) => {

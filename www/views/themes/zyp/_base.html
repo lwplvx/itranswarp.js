@@ -379,6 +379,8 @@
         <div class="x-stick"></div>
     </div>
 
+    {% if __shownav__ %}
+
     <div id="header" class="uk-navbar uk-navbar-attached">
         <div class="uk-container x-container">
             <div class="uk-navbar uk-navbar-attached">
@@ -448,6 +450,7 @@
             </div>
         </div>
     </div><!-- // header -->
+    {% endif %}
 
     <div id="main">
         <div class="x-placeholder-50"><!-- placeholder --></div>
@@ -621,7 +624,7 @@
                 <div class="uk-width-medium-1-2">
 
                     <form v-on:submit.prevent="signUp" class="uk-form uk-form-stacked uk-margin">
-                        
+
                         <fieldset>
                             <div class="uk-alert uk-alert-danger uk-hidden"></div>
 

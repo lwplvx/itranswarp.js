@@ -12,6 +12,7 @@ const
     search = require('../search/search'),
     constants = require('../constants'),
     userApi = require('./userApi'),
+    config = require('../config'),
     Board = db.Board,
     Topic = db.Topic,
     Reply = db.Reply,
@@ -84,6 +85,7 @@ async function getBoardByTag(tag) {
     }
     return filtered[0];
 }
+ 
 
 async function getBoards() {
     return await cache.get(constants.cache.BOARDS, async () => {
@@ -106,6 +108,61 @@ async function getTopic(id) {
         throw api.notFound('Topic');
     }
     return topic;
+}
+
+function bindUrl(topics)
+{ 
+    for (let i = 0; i < topics.length; i++) {
+        let
+            topic = topics[i];
+
+        topic.url = `http://${config.domain}/discuss/view/${topic.board_id}/${topic.id}`;
+    }
+}
+
+async function getPageTopicsByUserId(page,userId) {
+    page.total = await Topic.count({
+     where: { 
+            user_id: userId
+        }
+    });
+    if (page.isEmpty) {
+        return [];
+    }
+
+    return await Topic.findAll({
+        where: { 
+            user_id: userId
+        }, 
+        attributes: {
+            exclude: ['content']
+        },       
+        order: 'id DESC',
+        offset: page.offset,
+        limit: page.limit
+    });
+}
+
+
+async function getPageRepliesByUserId(page,userId) {
+    page.total = await Reply.count({
+        where:
+        {
+            user_id:userId            
+        }
+    });
+    if (page.isEmpty) {
+        return [];
+    }
+    return await Reply.findAll({
+        where:
+        {
+                user_id:userId    
+        },
+        order: 'id DESC',  
+        offset: page.offset,
+        limit: page.limit
+    });
 }
 
 async function getAllTopics(page) {
@@ -685,15 +742,72 @@ module.exports = {
             id = ctx.params.id,
             data = ctx.request.body;
         ctx.rest(await createReply(ctx.state.__user__, id, data));
-    }
+    },
 
     // 获取自己的提问
+    'GET /api/topics/me': async (ctx, next) => {
+        /**
+         * Get all topics. NOTE: the returned topics do not have 'content'.
+         * @param { number } [page = 1]: The page number, starts from 1.
+         * @return {object} Topic objects and page information.
+         */
+        ctx.checkPermission(constants.role.SUBSCRIBER);
+        let
+            page = helper.getPage(ctx.request),
+            topics = await getPageTopicsByUserId(page,ctx.state.__user__.id);
+       
+            bindUrl(topics);
+
+        ctx.rest({
+            page: page,
+            topics: topics
+        });
+    },
 
     // 获取自己的回复过的提问
-
-
-
+    'GET /api/replies/me': async (ctx, next) => {
+        /**
+         * Get all topics. NOTE: the returned topics do not have 'content'.
+         * @param { number } [page = 1]: The page number, starts from 1.
+         * @return {object} Topic objects and page information.
+         */
+        ctx.checkPermission(constants.role.SUBSCRIBER);
+        let
+            page = helper.getPage(ctx.request),
+            replies = await getPageRepliesByUserId(page,ctx.state.__user__.id);
+             
+        ctx.rest({
+            page: page,
+            topics: replies
+        });
+    },
     
+    // 获取 指定问题 的所有回复
+    'GET /api/discuss/topic/:id': async (ctx, next) => {
+        let 
+            tid = ctx.params.id,
+            topic = await getTopic(tid),
+            board,
+            replies,
+            model;
+        let bid=topic.board_id; 
 
+        let page = helper.getPage(ctx.request);
+        board = await getBoard(bid);
+        replies = await getReplies(tid, page);
+        if (page.index === 1) {
+            replies.unshift(topic);
+        }
+        await userApi.bindUsers(replies);
 
+        bindUrl([topic]);
+
+        model = {
+            page: page,
+            board: board,
+            topic: topic,
+            replies: replies
+        };
+        ctx.rest(model);
+    },
 };

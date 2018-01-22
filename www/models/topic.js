@@ -53,5 +53,5 @@ module.exports = {
             type: dbtypes.TEXT
         }
     },
-    extraFields: ['user']
+    extraFields: ['user','url']
 };
