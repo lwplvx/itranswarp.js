@@ -775,10 +775,17 @@ module.exports = {
         let
             page = helper.getPage(ctx.request),
             replies = await getPageRepliesByUserId(page,ctx.state.__user__.id);
-             
+        
+        //let topic;
+        //if (replies.length>0) {            
+        //    topic = await getTopic(replies[0].topic_id);
+        //    bindUrl([topic]);
+        //}            
+
         ctx.rest({
             page: page,
-            topics: replies
+            user:ctx.state.__user__,           
+            replies: replies
         });
     },
     
