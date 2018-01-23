@@ -264,7 +264,7 @@ module.exports = {
         };
         ctx.rest(user);
     },
-      
+
     'POST /api/signup': async (ctx, next) => {
         /**
          * Create user by email and password, for local user only.
@@ -337,7 +337,7 @@ module.exports = {
             redirect_uri = redirect_uri + '?jscallback=' + jscallback;
         }
         else {
-            //  redirect_uri = redirect_uri + '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
+            redirect_uri = redirect_uri + '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
         }
         logger.info(`send OAuth2 redirect uri: ${redirect_uri}`);
         ctx.response.redirect(provider.getAuthenticateURL({
