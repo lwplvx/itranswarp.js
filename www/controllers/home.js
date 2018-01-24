@@ -159,6 +159,14 @@ function _bindAdSlots(adperiods, adslots) {
     }
 }
 
+function _getReferer(request) {
+    let url = request.get('referer') || '/';
+    if (url.indexOf('/auth/') >= 0 || url.indexOf('/manage/') >= 0) {
+        url = '/';
+    }
+    return url;
+}
+
 module.exports = {
 
     'GET /404': async (ctx, next) => {
@@ -406,8 +414,12 @@ module.exports = {
 
     'GET /discuss/:bid/topics/create': async (ctx, next) => {
         if (ctx.state.__user__ === null) {
-            ctx.response.redirect('/auth/signin');
-            return;
+            let redirect_uri = "/auth/signin";
+
+            redirect_uri = '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
+
+            ctx.response.redirect(redirect_uri);
+
         }
         let
             bid = ctx.params.bid,
@@ -416,6 +428,23 @@ module.exports = {
                 board: board
             };
         ctx.render('discuss/topic_form.html', await getModel(model));
+    },
+
+    'GET /discuss/boards/topic/create': async (ctx, next) => {
+        if (ctx.state.__user__ === null) {
+
+            let redirect_uri = "/auth/signin";
+
+            redirect_uri = '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
+           
+            ctx.response.redirect(redirect_uri);
+
+            return;
+        }
+        let boards = await discussApi.getBoards();
+        ctx.render('discuss/topic_create.html', await getModel({
+            boards: boards
+        })); 
     },
 
     'GET /discuss/topic/:tid/find/:rid': async (ctx, next) => {

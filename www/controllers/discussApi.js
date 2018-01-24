@@ -341,7 +341,8 @@ async function createTopic(user, board_id, ref_type, ref_id, data) {
             name: data.name.trim(),
             tags: (data.tags || '').trim(),
             content: md.ugcMarkdownToHtml(data.content),
-            replies: 0
+            replies: 0,
+            reply_id:''
         });
     await Board.update({
         topics: db.sequelize.literal('topics + 1')
