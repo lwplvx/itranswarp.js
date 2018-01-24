@@ -66,7 +66,6 @@
     <script src="/static/js/sha1.min.js"></script>
     <script src="/static/js/vue.js"></script>
     <script src="/static/js/vue-resource.min.js"></script>
-
     <script id="tplComment" type="text/plain">
         <div class="uk-comment">
             <div class="uk-comment-header" style="margin-bottom:0">
@@ -79,7 +78,6 @@
             </div>
         </div>
     </script>
-
     <script id="tplCommentReply" type="text/plain">
         <div class="uk-comment">
             <div class="uk-comment-header" style="margin-bottom:0">
@@ -92,7 +90,6 @@
             </div>
         </div>
     </script>
-
     <script id="tplCommentInfo" type="text/plain">
         <li>
             <div class="x-comment-info">
@@ -103,7 +100,6 @@
             </div>
         </li>
     </script>
-
     <script id="tplCommentArea" type="text/plain">
         <div class="x-display-if-signin">
             <p><button id="comment-make-button" type="button" class="uk-button uk-button-primary"><i class="uk-icon-comment"></i> {{ _('Make a comment') }}</button></p>
@@ -130,9 +126,9 @@
             </form>
         </div>
     </script>
-
     {% if __user__ %}
     <style id="x-doc-style">
+
         .x-display-none {
             display: none;
         }
@@ -143,6 +139,7 @@
     </style>
     {% else %}
     <style id="x-doc-style">
+
         .x-display-none {
             display: none;
         }
@@ -232,18 +229,18 @@
             eval(decodeURIComponent('%69f%28%21get%43%6F%6F%6B%69%65(%27%61tsp%27))%73%65%74C%6F%6F%6B%69%65(%27%61tsp%27%2C%20%27{{ __time__ }}%5F%27%2Bnew%20Date%28%29.getTime%28%29%2C%20580%29%3B'));
         })();
     </script>
-
     {% block head %}<!-- head  -->{% endblock %}
 
 
     <style>
+
         .x-center {
             margin: 0;
         }
     </style>
-
     {% if __sidebar_left__ %}
     <style>
+
         .x-center {
             margin-left: 316px;
             padding-left: 15px;
@@ -253,6 +250,7 @@
 
     {% if __sidebar_right__ %}
     <style>
+
         .x-center {
             margin-right: 316px;
             padding-right: 15px;
@@ -262,7 +260,6 @@
 
     <!-- BEGIN custom_header -->
     {{ __website__.custom_header|safe }}
-
 
     <!-- 登录相关 -->
     <script>
@@ -329,14 +326,14 @@
                                 passwd: this.passwd === '' ? '' : CryptoJS.SHA1(email + ':' + this.passwd).toString()
                             };
                         clearFormError('modal-signin');
-                        
+
                         that.$resource('/api/authenticate').save(data).then(function (resp) {
                             resp.json().then(function (result) {
                                 //location.assign('/');
                                 location.reload();
                             });
                         }, (resp) => {
-                            onJsonFormError(resp,'modal-signin');
+                            onJsonFormError(resp, 'modal-signin');
                         });
                     }
                 }
@@ -364,7 +361,7 @@
                                 location.assign('/auth/signin');
                             });
                         }, (resp) => {
-                            onJsonFormError(resp,'modal-signup');
+                            onJsonFormError(resp, 'modal-signup');
                         });
                     }
                 }
@@ -374,13 +371,11 @@
     <!-- 登录相关 end -->
     <!-- END custom_header -->
 </head>
-
 <body>
     <div class="x-goto-top">
         <div class="x-arrow"></div>
         <div class="x-stick"></div>
     </div>
-
     {% if __shownav__ %}
 
     <div id="header" class="uk-navbar uk-navbar-attached">
@@ -424,7 +419,6 @@
                                     </form>
                                 </div>
                 -->
-
                 <div class="uk-navbar-flip">
                     <ul class="uk-navbar-nav">
                         <li class="uk-parent x-display-if-signin" data-uk-dropdown>
@@ -504,14 +498,12 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="x-body-bottom uk-width-1-1">
                     {% block body_bottom %}{{ __snippets__.body_bottom|safe }}{% endblock %}
                 </div>
             </div>
         </div>
     </div>
-
     {% if __offcanvas_left__ %}
     <div id="x-offcanvas-left" class="uk-offcanvas">
         <div class="uk-offcanvas-bar">
@@ -549,7 +541,6 @@
             </div>
         </div>
     </div>
-
     <!-- 登录框 -->
     <div id="modal-signin" class="uk-modal">
         <div class="uk-modal-dialog">
@@ -557,31 +548,24 @@
             <div class="uk-modal-header">
                 <h2>{{ _('Please Sign In') }}</h2>
             </div>
-
             <div class="uk-grid uk-grid-divider">
-
                 <!-- 用户名 密码登录 -->
                 <div class="uk-width-medium-1-2">
-
                     <form v-on:submit.prevent="signIn" class="uk-form uk-form-stacked uk-margin">
-
                         <fieldset>
                             <div class="uk-alert uk-alert-danger uk-hidden"></div>
-
                             <div class="uk-form-row">
                                 <label class="uk-form-label">{{ _('Email') }}:</label>
                                 <div class="uk-form-controls">
                                     <input v-model="email" name="email" type="email" class="uk-width-1-1" placeholder="email">
                                 </div>
                             </div>
-
                             <div class="uk-form-row">
                                 <label class="control-label">{{ _('Password') }}:</label>
                                 <div class="controls">
                                     <input v-model="passwd" name="passwd" type="password" class="uk-width-1-1" placeholder="password">
                                 </div>
                             </div>
-
                             <div class="uk-form-row">
                                 <div class="controls">
                                     <button type="submit" class="uk-button uk-button-success uk-width-1-1"> {{ _('Sign In') }}</button>
@@ -589,9 +573,7 @@
                             </div>
                         </fieldset>
                     </form>
-
                 </div>
-
                 <!-- 社交账号登录 -->
                 <div class="uk-width-medium-1-2">
                     <h3>
@@ -611,7 +593,6 @@
         </div>
     </div>
 
-
     <!-- 注册框 -->
     <div id="modal-signup" class="uk-modal">
         <div class="uk-modal-dialog">
@@ -619,38 +600,30 @@
             <div class="uk-modal-header">
                 <h2>{{ _('Please Sign Up') }}</h2>
             </div>
-
             <div class="uk-grid uk-grid-divider">
-
                 <!-- 用户名 密码注册 -->
                 <div class="uk-width-medium-1-2">
-
                     <form v-on:submit.prevent="signUp" class="uk-form uk-form-stacked uk-margin">
-
                         <fieldset>
                             <div class="uk-alert uk-alert-danger uk-hidden"></div>
-
                             <div class="uk-form-row">
                                 <label class="uk-form-label">{{ _('Email') }}:</label>
                                 <div class="uk-form-controls">
                                     <input v-model="email" name="email" type="email" class="uk-width-1-1" placeholder="email">
                                 </div>
                             </div>
-
                             <div class="uk-form-row">
                                 <label class="control-label">{{ _('Password') }}:</label>
                                 <div class="controls">
                                     <input v-model="passwd" name="passwd" type="password" class="uk-width-1-1" placeholder="password">
                                 </div>
                             </div>
-
                             <div class="uk-form-row">
                                 <label class="control-label">{{ _('Password') }}:</label>
                                 <div class="controls">
                                     <input v-model="passwd2" name="passwd2" type="password" class="uk-width-1-1" placeholder="password">
                                 </div>
                             </div>
-
                             <div class="uk-form-row">
                                 <div class="controls">
                                     <button type="submit" class="uk-button uk-button-primary uk-width-1-1"> {{ _('Sign Up') }}</button>
@@ -658,9 +631,7 @@
                             </div>
                         </fieldset>
                     </form>
-
                 </div>
-
                 <!-- 社交账号登录 -->
                 <div class="uk-width-medium-1-2">
                     <h3>
@@ -670,7 +641,6 @@
                             </i> {{ _('Email') }} {{ _('Sign In') }}
                         </a>
                     </h3>
-
                     <p>{{ _('You can sign in directly without register') }}:</p>
                     {% for signin in __signins__ %}
                     <h3><a href="/auth/from/{{ signin.id }}" class="uk-button uk-button-{{signin.theme}}"><i class="uk-icon-{{ signin.icon }}"></i> {{ _(signin.name) }} </a></h3>
@@ -681,7 +651,6 @@
         </div>
     </div>
 
-
     <div id="oldBrowser">
         <div class="uk-alert uk-alert-danger" data-uk-alert>
             <a href="#0" class="uk-alert-close uk-close"></a>
@@ -691,8 +660,6 @@
             </p>
         </div>
     </div>
-
-
 
 </body>
 </html>

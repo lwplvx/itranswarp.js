@@ -595,6 +595,8 @@ module.exports = {
             page = helper.getPage(ctx.request),
             topics = await getAllTopics(page);
         await userApi.bindUsers(topics);
+        bindUrl(topics);
+
         ctx.rest({
             page: page,
             topics: topics
@@ -775,13 +777,7 @@ module.exports = {
         let
             page = helper.getPage(ctx.request),
             replies = await getPageRepliesByUserId(page,ctx.state.__user__.id);
-        
-        //let topic;
-        //if (replies.length>0) {            
-        //    topic = await getTopic(replies[0].topic_id);
-        //    bindUrl([topic]);
-        //}            
-
+         
         ctx.rest({
             page: page,
             user:ctx.state.__user__,           
