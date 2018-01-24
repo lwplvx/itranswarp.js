@@ -93,7 +93,7 @@ async function getAds() {
     return await cache.get(constants.cache.ADS, adApi.getAds, getTodayCacheTime());
 }
 
-async function getModel(model) {
+async function getModel(model,ctx) {
     model.__version__ = VERSION;
     model.__production__ = PRODUCTION;
     model.__cdn__ = CDN_URL_PREFIX;
@@ -103,6 +103,10 @@ async function getModel(model) {
     model.__ads__ = await getAds();
     model.__signins__ = signins;
     model.__shownav__ = true;
+
+    if (ctx&& ctx.request.query.nonav==='true') {
+        model.__shownav__ = false;
+    } 
     
     return model;
 }
@@ -110,8 +114,8 @@ async function getModel(model) {
 async function updateEntityViews(entity) {
     logger.info('Update views to: ' + entity.views);
     await cache.set(entity.id, 0);
+    await entity.update(['views']);
     await entity.save();
-    //await entity.update(['views']);
 }
 
 async function getIndexModel() {
@@ -170,12 +174,12 @@ function _getReferer(request) {
 module.exports = {
 
     'GET /404': async (ctx, next) => {
-        ctx.render('404.html', await getModel({}));
+        ctx.render('404.html', await getModel({}, ctx));
     },
 
     'GET /': async (ctx, next) => {
         let model = await cache.get('INDEX-MODEL', getIndexModel);
-        ctx.render('index.html', await getModel(model));
+        ctx.render('index.html', await getModel(model,ctx));
     },
 
     'GET /category/:id': async (ctx, next) => {
@@ -194,7 +198,7 @@ module.exports = {
             let a = model.articles[i];
             a.views = a.views + nums[i];
         }
-        ctx.render('article/category.html', await getModel(model));
+        ctx.render('article/category.html', await getModel(model,ctx));
     },
 
     'GET /article/:id': async (ctx, next) => {
@@ -212,7 +216,7 @@ module.exports = {
             await updateEntityViews(article);
         }
         article.content = md.systemMarkdownToHtml(article.content);
-        ctx.render('article/article.html', await getModel(model));
+        ctx.render('article/article.html', await getModel(model,ctx));
     },
 
     'GET /article/view/:id': async (ctx, next) => {
@@ -230,7 +234,7 @@ module.exports = {
             await updateEntityViews(article);
         }
         article.content = md.systemMarkdownToHtml(article.content);
-        model= await getModel(model); 
+        model= await getModel(model,ctx); 
         model.__shownav__ = false; 
 
         ctx.render('article/article.html', model);
@@ -247,7 +251,7 @@ module.exports = {
         webpage.content = md.systemMarkdownToHtml(webpage.content);
         ctx.render('webpage/webpage.html', await getModel({
             webpage: webpage
-        }));
+        },ctx));
     },
 
     'GET /wikipage/:id': async (ctx, next) => {
@@ -273,7 +277,7 @@ module.exports = {
             wiki: wiki,
             current: wiki,
             tree: tree
-        }));
+        },ctx));
     },
 
     'GET /wiki/:wid/:pid': async (ctx, next) => {
@@ -299,7 +303,7 @@ module.exports = {
             wiki: wiki,
             current: wikipage,
             tree: tree
-        }));
+        }, ctx));
     },
 
     'POST /api/comments/:ref_type/:ref_id': async (ctx, next) => {
@@ -334,7 +338,7 @@ module.exports = {
         let boards = await discussApi.getBoards();
         ctx.render('discuss/boards.html', await getModel({
             boards: boards
-        }));
+        },ctx));
     },
 
     'GET /discuss/:id': async (ctx, next) => {
@@ -350,7 +354,7 @@ module.exports = {
             board: board,
             topics: topics
         };
-        ctx.render('discuss/board.html', await getModel(model));
+        ctx.render('discuss/board.html', await getModel(model,ctx));
     },
 
     'GET /discuss/:bid/:tid': async (ctx, next) => {
@@ -378,7 +382,7 @@ module.exports = {
             topic: topic,
             replies: replies
         };
-        ctx.render('discuss/topic.html', await getModel(model));
+        ctx.render('discuss/topic.html', await getModel(model,ctx));
     },
     
     'GET /discuss/view/:bid/:tid': async (ctx, next) => {
@@ -406,7 +410,7 @@ module.exports = {
             topic: topic,
             replies: replies, 
         };
-        model= await getModel(model); 
+        model= await getModel(model,ctx); 
         model.__shownav__ = false; 
 
         ctx.render('discuss/topic.html', model);
@@ -427,7 +431,7 @@ module.exports = {
             model = {
                 board: board
             };
-        ctx.render('discuss/topic_form.html', await getModel(model));
+        ctx.render('discuss/topic_form.html', await getModel(model,ctx));
     },
 
     'GET /discuss/boards/topic/create': async (ctx, next) => {
@@ -435,16 +439,17 @@ module.exports = {
 
             let redirect_uri = "/auth/signin";
 
-            redirect_uri = '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
+            redirect_uri = redirect_uri+ '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
            
             ctx.response.redirect(redirect_uri);
 
             return;
         }
         let boards = await discussApi.getBoards();
-        ctx.render('discuss/topic_create.html', await getModel({
+        let model = {
             boards: boards
-        })); 
+        };
+        ctx.render('discuss/topic_create.html', await getModel(model,ctx)); 
     },
 
     'GET /discuss/topic/:tid/find/:rid': async (ctx, next) => {
@@ -466,7 +471,7 @@ module.exports = {
             user: user,
             topics: await discussApi.getTopicsByUser(user.id)
         }
-        ctx.render('user/profile.html', await getModel(model));
+        ctx.render('user/profile.html', await getModel(model,ctx));
     },
 
     'GET /user/:id': async (ctx, next) => {
@@ -477,7 +482,7 @@ module.exports = {
                 user: user,
                 topics: await discussApi.getTopicsByUser(id)
             };
-        ctx.render('user/profile.html', await getModel(model));
+        ctx.render('user/profile.html', await getModel(model,ctx));
     },
 
     // TODO: test
@@ -528,7 +533,7 @@ module.exports = {
             return p.status !== 'EXPIRED';
         });
         if (adperiods.length === 0) {
-            ctx.render('user/sponsor-empty.html', await getModel({}));
+            ctx.render('user/sponsor-empty.html', await getModel({},ctx));
             return;
         }
         _bindAdSlots(adperiods, adslots);
@@ -547,7 +552,7 @@ module.exports = {
             adperiods: adperiods,
             adperiod: adperiod,
             admaterials: admaterials
-        }));
+        },ctx));
     },
 
     'GET /auth/signin': async (ctx, next) => {
@@ -558,7 +563,7 @@ module.exports = {
         if (user !== null) {
             
         }
-        ctx.render('signin.html', await getModel({}));
+        ctx.render('signin.html', await getModel({}, ctx));
     },
 
     // lwp Ìí¼ÓµÄ×¢²á
@@ -570,7 +575,7 @@ module.exports = {
         if (user !== null) {
 
         }
-        ctx.render('signup.html', await getModel({}));
+        ctx.render('signup.html', await getModel({}, ctx));
     },
 
 
