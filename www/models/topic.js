@@ -51,7 +51,14 @@ module.exports = {
         },
         content: {
             type: dbtypes.TEXT
+        },
+        solved: {
+            type: dbtypes.BOOLEAN,
+            defaultValue: () => false
+        },
+        reply_id: {
+            type: dbtypes.ID
         }
     },
-    extraFields: ['user','url']
+    extraFields: ['user', 'url', 'reply']
 };

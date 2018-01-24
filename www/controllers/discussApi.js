@@ -115,8 +115,8 @@ function bindUrl(topics)
     for (let i = 0; i < topics.length; i++) {
         let
             topic = topics[i];
-
-        topic.url = `http://${config.domain}/discuss/view/${topic.board_id}/${topic.id}`;
+        let prefix = config.session.https ? "https" : "http";
+        topic.url = `${prefix}://${config.domain}/discuss/view/${topic.board_id}/${topic.id}`;
     }
 }
 
