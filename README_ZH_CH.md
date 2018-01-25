@@ -1,30 +1,16 @@
 # itranswarp.js
  
- ÔİÊ±½çÃæÕı³£ÁË£¬µ«ÊÇµÇÂ¼»¹ÊÇ²»Ö§³Ö£¬ĞèÒª¼ÌĞø
+ æš‚æ—¶ç•Œé¢æ­£å¸¸äº†ï¼Œä½†æ˜¯ç™»å½•è¿˜æ˜¯ä¸æ”¯æŒï¼Œéœ€è¦ç»§ç»­
 
- Ô­°æ REDEME µÄ Êı¾İ¿â³õÊ¼»¯ ²Î¿¼ÕâÀï£º
-	ÔÚÊı¾İ¿âÖ÷»ú ÔËĞĞ init-db
+ åŸç‰ˆ REDEME çš„ æ•°æ®åº“åˆå§‹åŒ– å‚è€ƒè¿™é‡Œï¼š
+	åœ¨æ•°æ®åº“ä¸»æœº è¿è¡Œ init-db
 
-itranswarp.css  ĞèÒªÔËĞĞ less-watch-compiler static/css/less static/css itranswarp.less  Éú³É 
-themes default µÄ js ºÍ css  ÎÄ¼ş Òª²Î¿¼ Ô­°æÎÄ¼şµÄÂ·¾¶¸´ÖÆ¡£
-
-
-windows  Í¨¹ı  set NODE_ENV=production  ÃüÁî ¿ÉÒÔÉèÖÃ process.env.NODE_ENV
+itranswarp.css  éœ€è¦è¿è¡Œ less-watch-compiler static/css/less static/css itranswarp.less  ç”Ÿæˆ 
+themes default çš„ js å’Œ css  æ–‡ä»¶ è¦å‚è€ƒ åŸç‰ˆæ–‡ä»¶çš„è·¯å¾„å¤åˆ¶ã€‚
 
 
-ÔËĞĞ»·¾³ĞèÒª£¨gm Ä£¿é Í¼Æ¬´¦Àí£© °²×° http://www.graphicsmagick.org/£¬  ÕıÈ·°²×° GraphicsMagick £¨windows °²×°ºÃĞèÒªÖØÆôÒ»´Î£©¾Í¿ÉÒÔÁË¡£
-
-Î¢²©µÇÂ¼Ïà¹ØµÄ 
-
-ÔÚ userApi GET /auth/from/:name
-
-´úÂë¶Î ÈçÏÂ£º×¢ÊÍ ÁË else ÄÚµÄÄÚÈİ  
-   £¨ Èç¹û´øÉÏ redirect ²ÎÊı Î¢²© µØÖ·ÉèÖÃ  ĞèÒª¶ÔÓ¦ Ò²Ğí ÔÚÉèÖÃ¡¾ÊÚÈ¨»Øµ÷Ò³¡¿ ÄÇÀï´øÉÏ redirect=xxxx ¾Í¿ÉÒÔ²»ÓÃ×¢ÊÍÁË£¨Ğ§¹ûÎ´²âÊÔ£©£©
+windows  é€šè¿‡  set NODE_ENV=production  å‘½ä»¤ å¯ä»¥è®¾ç½® process.env.NODE_ENV
 
 
-  if (jscallback) {
-            redirect_uri = redirect_uri + '?jscallback=' + jscallback;
-        }
-        else {
-          //  redirect_uri = redirect_uri + '?redirect=' + encodeURIComponent(_getReferer(ctx.request));
-        }
+è¿è¡Œç¯å¢ƒéœ€è¦ï¼ˆgm æ¨¡å— å›¾ç‰‡å¤„ç†ï¼‰ å®‰è£… http://www.graphicsmagick.org/ï¼Œ  æ­£ç¡®å®‰è£… GraphicsMagick ï¼ˆwindows å®‰è£…å¥½éœ€è¦é‡å¯ä¸€æ¬¡ï¼‰å°±å¯ä»¥äº†ã€‚
+
